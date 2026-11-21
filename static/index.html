@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="EntraGuard AI identity security incident operations console">
+  <title>EntraGuard AI · Incident Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <a class="brand" href="#" aria-label="EntraGuard AI home">
+        <svg viewBox="0 0 32 36" aria-hidden="true"><path d="M16 1.8 29 6.7v10.4c0 8.2-5.3 14.7-13 17.2C8.3 31.8 3 25.3 3 17.1V6.7L16 1.8Z"/><path class="brand-mark" d="m10.1 18.3 3.7 3.7 8.2-8.5"/></svg>
+        <span>EG</span>
+      </a>
+      <nav>
+        <button class="rail-item" title="Overview" aria-label="Overview"><span data-icon="grid"></span></button>
+        <button class="rail-item active" title="Incidents" aria-label="Incidents"><span data-icon="shield"></span></button>
+        <button class="rail-item" title="Identities" aria-label="Identities"><span data-icon="users"></span></button>
+        <button class="rail-item" title="Detections" aria-label="Detections"><span data-icon="pulse"></span></button>
+        <button class="rail-item" title="Integrations" aria-label="Integrations"><span data-icon="link"></span></button>
+      </nav>
+      <div class="rail-bottom">
+        <button class="rail-item" title="Settings" aria-label="Settings"><span data-icon="settings"></span></button>
+        <button class="avatar avatar-small" title="Alex Morgan">AM</button>
+      </div>
+    </aside>
+
+    <div class="surface">
+      <header class="topbar">
+        <div class="product-name">
+          <span class="product-wordmark">EntraGuard <b>AI</b></span>
+          <span class="product-divider"></span>
+          <span class="product-section">Incident operations</span>
+        </div>
+        <div class="top-actions">
+          <label class="search-box">
+            <span data-icon="search"></span>
+            <input id="global-search" type="search" placeholder="Search incidents or identities" autocomplete="off">
+            <kbd>⌘ K</kbd>
+          </label>
+          <div id="mode-chip" class="mode-chip"><span class="status-dot"></span> Connecting</div>
+          <button class="icon-button" aria-label="Notifications"><span data-icon="bell"></span><i></i></button>
+          <div class="analyst">
+            <div class="avatar">AM</div>
+            <div><strong>Alex Morgan</strong><span>Security analyst</span></div>
+            <span data-icon="chevron"></span>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="queue" aria-label="Security incident queue">
+          <div class="queue-header">
+            <div>
+              <p class="eyebrow">SOC WORKSPACE</p>
+              <h1>Incidents</h1>
+            </div>
+            <button class="icon-button bordered" title="Filter incidents" aria-label="Filter incidents"><span data-icon="filter"></span></button>
+          </div>
+          <div class="queue-stats">
+            <button class="stat selected" data-filter="all"><strong id="stat-all">—</strong><span>All open</span></button>
+            <button class="stat" data-filter="Critical"><strong id="stat-critical">—</strong><span>Critical</span></button>
+            <button class="stat" data-filter="ticketed"><strong id="stat-ticketed">—</strong><span>Ticketed</span></button>
+          </div>
+          <div class="queue-toolbar">
+            <span id="queue-count">Loading incidents…</span>
+            <button class="sort-button">Risk score <span data-icon="sort"></span></button>
+          </div>
+          <div id="incident-list" class="incident-list" aria-live="polite">
+            <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+          </div>
+          <div class="queue-footer"><span class="live-pulse"></span> Live detection stream</div>
+        </section>
+
+        <section id="incident-detail" class="detail" aria-live="polite">
+          <div class="detail-loading">
+            <div class="spinner"></div><p>Loading investigation…</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="ticket-modal" class="modal-backdrop" hidden>
+    <section class="modal ticket-modal" role="dialog" aria-modal="true" aria-labelledby="ticket-modal-title">
+      <header class="modal-header">
+        <div class="servicenow-logo"><span></span></div>
+        <div><p class="eyebrow">HUMAN APPROVAL REQUIRED</p><h2 id="ticket-modal-title">Raise ServiceNow ticket</h2></div>
+        <button class="icon-button modal-close" data-close="ticket-modal" aria-label="Close"><span data-icon="x"></span></button>
+      </header>
+      <div class="modal-content">
+        <div class="review-banner"><span data-icon="sparkle"></span><div><strong>AI-prepared, analyst-reviewed</strong><p>This summary is composed only from verified evidence attached to the incident. Review it before submission.</p></div></div>
+        <label class="form-field"><span>Short description</span><input id="ticket-short-description" maxlength="160"></label>
+        <div class="form-row">
+          <label class="form-field"><span>Assignment group</span><select id="ticket-assignment-group"></select></label>
+          <label class="form-field"><span>Category</span><input id="ticket-category" disabled></label>
+        </div>
+        <label class="form-field"><span>SOC-ready ticket summary</span><textarea id="ticket-description" rows="16" maxlength="12000"></textarea><small><span data-icon="check"></span> Verified evidence only · Editable before submission</small></label>
+      </div>
+      <footer class="modal-footer">
+        <button class="button secondary" data-close="ticket-modal">Cancel</button>
+        <button id="confirm-create-ticket" class="button servicenow-button"><span data-icon="ticket"></span>Create incident</button>
+      </footer>
+    </section>
+  </div>
+
+  <div id="comment-modal" class="modal-backdrop" hidden>
+    <section class="modal comment-modal" role="dialog" aria-modal="true" aria-labelledby="comment-modal-title">
+      <header class="modal-header">
+        <div><p class="eyebrow">SERVICENOW WORK NOTE</p><h2 id="comment-modal-title">Add investigation update</h2></div>
+        <button class="icon-button modal-close" data-close="comment-modal" aria-label="Close"><span data-icon="x"></span></button>
+      </header>
+      <div class="modal-content">
+        <p class="form-intro">Send verified analyst notes to the linked ServiceNow incident. The action will be recorded in the audit trail.</p>
+        <label class="form-field"><span>Investigation note</span><textarea id="comment-text" rows="7" maxlength="8000" placeholder="Example: User confirmed they did not perform the Global Administrator activation. Active sessions were revoked and credential reset was initiated."></textarea><small id="comment-count">0 / 8,000</small></label>
+      </div>
+      <footer class="modal-footer">
+        <button class="button secondary" data-close="comment-modal">Cancel</button>
+        <button id="confirm-comment" class="button primary"><span data-icon="send"></span>Send update</button>
+      </footer>
+    </section>
+  </div>
+
+  <div id="toast-region" class="toast-region" aria-live="assertive"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,18 @@
+[project]
+name = "entraguard-ai"
+version = "1.0.0"
+description = "Entra identity security incident operations with ServiceNow integration"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.133.1",
+  "httpx==0.28.1",
+  "pydantic==2.12.5",
+  "uvicorn[standard]==0.41.0",
+]
+
+[dependency-groups]
+dev = ["pytest==9.0.2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
